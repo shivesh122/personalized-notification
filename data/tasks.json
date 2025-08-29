@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": "shivesh",
+      "name": "Shivesh Tiwari",
+      "timezone": "Asia/Kolkata",
+      "tasks": [
+        {
+          "id": "a_for_apple",
+          "title": "A for Apple practice",
+          "due": "2025-08-30",
+          "completed": false,
+          "priority": "high"
+        },
+        {
+          "id": "math_quiz",
+          "title": "Math quiz - chapter 3",
+          "due": "2025-09-02",
+          "completed": true,
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "id": "anita",
+      "name": "Anita Verma",
+      "timezone": "Asia/Kolkata",
+      "tasks": [
+        {
+          "id": "reading",
+          "title": "Reading: 'The Little Prince'",
+          "due": "2025-08-31",
+          "completed": false,
+          "priority": "low"
+        }
+      ]
+    }
+  ]
+}

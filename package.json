@@ -1,0 +1,12 @@
+{
+  "name": "personalized-notify-vercel",
+  "version": "1.0.0",
+  "description": "Demo: Personalized notification system with Vercel Cron Job (simulated send).",
+  "main": "api/notify.js",
+  "scripts": {
+    "start": "node api/notify.js"
+  },
+  "author": "Generated for demo",
+  "license": "MIT",
+  "dependencies": {}
+}
