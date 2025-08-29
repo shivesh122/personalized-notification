@@ -42,10 +42,8 @@ function isMobile() {
 
 async function triggerNotification(msg) {
   if (isMobile()) {
-    // Mobile: simulate with alert (since push requires service worker)
     alert("🔔 " + msg);
   } else {
-    // Desktop: real notification
     if (Notification.permission === "default") {
       await Notification.requestPermission();
     }
@@ -74,7 +72,6 @@ async function triggerNotify(auto = false) {
     const j = await r.json();
     out.textContent = JSON.stringify(j, null, 2);
 
-    // Show notification only on manual trigger
     if (!auto && j.notifications && j.notifications.length > 0) {
       triggerNotification(j.notifications[0].message);
     }
@@ -85,7 +82,6 @@ async function triggerNotify(auto = false) {
 
 document.getElementById('run').addEventListener('click', () => triggerNotify(false));
 
-// auto trigger (just updates result box, no push/alert)
 window.addEventListener('DOMContentLoaded', () => {
   triggerNotify(true);
 });
