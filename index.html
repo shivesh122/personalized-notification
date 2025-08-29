@@ -36,23 +36,31 @@
   </section>
 
 <script>
-async function triggerBrowserNotification(msg) {
-  // Ask for permission if not already granted
-  if (Notification.permission === "default") {
-    await Notification.requestPermission();
-  }
+function isMobile() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
-  if (Notification.permission === "granted") {
-    new Notification("Personalized Notification", {
-      body: msg,
-      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png" // demo icon
-    });
+async function triggerNotification(msg) {
+  if (isMobile()) {
+    // Mobile: simulate with alert (since push requires service worker)
+    alert("🔔 " + msg);
   } else {
-    alert("Notifications are blocked. Please enable them in your browser settings.");
+    // Desktop: real notification
+    if (Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+
+    if (Notification.permission === "granted") {
+      new Notification("Personalized Notification", {
+        body: msg,
+        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+      });
+    } else {
+      alert("Notifications are blocked. Please enable them in your browser settings.");
+    }
   }
 }
 
-// Example: after fetching /api/notify, show a browser notification
 async function triggerNotify(auto = false) {
   const user = document.getElementById('user').value.trim();
   const send = document.getElementById('send').value;
@@ -66,19 +74,18 @@ async function triggerNotify(auto = false) {
     const j = await r.json();
     out.textContent = JSON.stringify(j, null, 2);
 
-    // Show browser notification on manual click only (not auto load)
+    // Show notification only on manual trigger
     if (!auto && j.notifications && j.notifications.length > 0) {
-      triggerBrowserNotification(j.notifications[0].message);
+      triggerNotification(j.notifications[0].message);
     }
   } catch (e) {
     out.textContent = 'Error: ' + e.message;
   }
 }
 
-// manual trigger button
 document.getElementById('run').addEventListener('click', () => triggerNotify(false));
 
-// auto trigger (just updates result box, no push notification)
+// auto trigger (just updates result box, no push/alert)
 window.addEventListener('DOMContentLoaded', () => {
   triggerNotify(true);
 });
