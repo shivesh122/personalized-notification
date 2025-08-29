@@ -10,7 +10,7 @@
     input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
     pre { background: #f7f7f8; padding: 12px; border-radius: 8px; overflow:auto; }
     header h1 { margin: 0 0 8px 0; font-size: 20px; }
-    .row { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+    .row { display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
@@ -49,6 +49,23 @@
         const r = await fetch(url);
         const j = await r.json();
         out.textContent = JSON.stringify(j, null, 2);
+
+        // ---- NEW: Show system/browser notification ----
+        const message = (j.notifications && j.notifications[0]) 
+          ? j.notifications[0] 
+          : "No tasks today 🎉";
+
+        if (Notification.permission !== "granted") {
+          await Notification.requestPermission();
+        }
+        if (Notification.permission === "granted") {
+          new Notification("Personalized Reminder", {
+            body: message,
+            icon: "https://cdn-icons-png.flaticon.com/512/295/295128.png"
+          });
+        } else {
+          alert(message);
+        }
       } catch (e) {
         out.textContent = 'Error: ' + e.message;
       }
