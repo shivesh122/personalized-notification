@@ -35,41 +35,53 @@
     <pre id="out">No requests yet.</pre>
   </section>
 
-  <script>
-    const out = document.getElementById('out');
-    document.getElementById('run').addEventListener('click', async () => {
-      const user = document.getElementById('user').value.trim();
-      const send = document.getElementById('send').value;
-      const q = new URLSearchParams();
-      if (user) q.set('user', user);
-      if (send) q.set('send', send);
-      const url = '/api/notify?' + q.toString();
-      out.textContent = 'Loading...';
-      try {
-        const r = await fetch(url);
-        const j = await r.json();
-        out.textContent = JSON.stringify(j, null, 2);
+<script>
+async function triggerBrowserNotification(msg) {
+  // Ask for permission if not already granted
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
 
-        // ---- NEW: Show system/browser notification ----
-        const message = (j.notifications && j.notifications[0]) 
-          ? j.notifications[0] 
-          : "No tasks today 🎉";
-
-        if (Notification.permission !== "granted") {
-          await Notification.requestPermission();
-        }
-        if (Notification.permission === "granted") {
-          new Notification("Personalized Reminder", {
-            body: message,
-            icon: "https://cdn-icons-png.flaticon.com/512/295/295128.png"
-          });
-        } else {
-          alert(message);
-        }
-      } catch (e) {
-        out.textContent = 'Error: ' + e.message;
-      }
+  if (Notification.permission === "granted") {
+    new Notification("Personalized Notification", {
+      body: msg,
+      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png" // demo icon
     });
-  </script>
+  } else {
+    alert("Notifications are blocked. Please enable them in your browser settings.");
+  }
+}
+
+// Example: after fetching /api/notify, show a browser notification
+async function triggerNotify(auto = false) {
+  const user = document.getElementById('user').value.trim();
+  const send = document.getElementById('send').value;
+  const q = new URLSearchParams();
+  if (user) q.set('user', user);
+  if (send) q.set('send', send);
+  const url = '/api/notify?' + q.toString();
+  out.textContent = auto ? 'Auto-triggering notification...' : 'Loading...';
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    out.textContent = JSON.stringify(j, null, 2);
+
+    // Show browser notification on manual click only (not auto load)
+    if (!auto && j.notifications && j.notifications.length > 0) {
+      triggerBrowserNotification(j.notifications[0].message);
+    }
+  } catch (e) {
+    out.textContent = 'Error: ' + e.message;
+  }
+}
+
+// manual trigger button
+document.getElementById('run').addEventListener('click', () => triggerNotify(false));
+
+// auto trigger (just updates result box, no push notification)
+window.addEventListener('DOMContentLoaded', () => {
+  triggerNotify(true);
+});
+</script>
 </body>
 </html>
