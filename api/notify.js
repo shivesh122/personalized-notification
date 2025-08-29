@@ -1,16 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 
-// Helper: Load tasks.json
+
 function loadData() {
   const p = path.join(__dirname, '..', 'data', 'tasks.json');
   const raw = fs.readFileSync(p, 'utf8');
   return JSON.parse(raw);
 }
 
-// Build a friendly message for a user + task
+
 function messageFor(user, task) {
-  // Simple templates - extend as needed
+  
   const name = user.name || user.id;
   const t = task.title;
   const due = task.due ? ` (due ${task.due})` : '';
@@ -23,11 +23,7 @@ module.exports = async (req, res) => {
   try {
     const data = loadData();
     const q = req.query || {};
-    // Optional query params:
-    // ?user=<id>  -> only notify that user
-    // ?send=true  -> simulate sending (console.log)
-    // ?dry=true   -> only return without "sending" to logs
-
+    
     const filterUser = q.user;
     const doSend = q.send === 'true';
     const dry = q.dry === 'true';
@@ -51,14 +47,13 @@ module.exports = async (req, res) => {
           priority: task.priority || 'normal'
         };
         notifications.push(note);
-        // Simulate sending by logging
+        
         if (doSend && !dry) {
           console.log('[SIMULATED SEND]', JSON.stringify(note));
         }
       });
     });
 
-    // If cron (no query params) triggered and send not explicitly set, we still log so Vercel Cron shows activity.
     if (!q.user && !q.send && notifications.length) {
       console.log('[CRON RUN] Generated', notifications.length, 'notifications');
       notifications.forEach(n => console.log('[CRON NOTIFY]', n.user, '-', n.message));
