@@ -8,5 +8,8 @@
   },
   "author": "Generated for demo",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
 }
